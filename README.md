@@ -3,6 +3,9 @@
 ## Idea
 
 ## ToDo
+* install a car holder,and set up network environment in the car.
+
+## Events
 
 ## item to buy
 * [Dashboard Car Holder](https://www.mobilefun.co.uk/olixar-dock-go-universal-windscreen-and-dashboard-car-holder-47851): Olixar Dock & Go Universal Windscreen and Dashboard Car Holder
