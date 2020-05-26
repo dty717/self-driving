@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+    <head>
+         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" crossorigin=""
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="/>
+        <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" crossorigin=""
+   integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="></script>
+        <style>
+            #mapid { height: 480px; }
+            .leaflet-popup-content {
+                margin: 13px 19px;
+                line-height: 1.4;
+                text-align: center;
+            }
+            .hand {
+                cursor: pointer;
+            }
+        </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+        
+    </head>
+    <body>
+        <div id="mapid"></div>
+        
+        <div id="content" style="overflow: scroll;">
+            
+        </div>
+        <script>
+            var mymap=L.map('mapid');
+            var begin=new Date().getTime();
+            var index=0;
+            
+            function nextLocation(){
+                if(new Date().getTime()>(begin+index*50000)){
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var x=position.coords.latitude;
+                        var y=position.coords.longitude
+                        mymap.setView([x,y], 14);
+                        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                            maxZoom: 15,
+                            id: 'mapbox.streets',
+                            accessToken: 'pk.eyJ1IjoiZHR5NzE3IiwiYSI6ImNqbmN0bzBnMjF6a2Mzd29lbmE3bGEwNDgifQ.R1Jt4Dnw9ZlttW6AJS10fA'
+                        }).addTo(mymap);
+                        makeLocation({X:x,Y:y})
+                        // console.log(x,y)
+                        document.getElementById('content').innerHTML+=x+","+y+"<br/>";
+                        // console.log(position.coords.latitude, position.coords.longitude);
+                    }); 
+                    index++;
+                }else{
+                    // console.log(begin+index*50000);
+                }
+                setTimeout(nextLocation, 50000);
+            }
+            setTimeout(nextLocation, 5000);
+            
+            function success(position) {
+                var x=position.coords.latitude;
+                var y=position.coords.longitude
+                mymap.setView([x,y], 14);
+                L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 15,
+                    id: 'mapbox.streets',
+                    accessToken: 'pk.eyJ1IjoiZHR5NzE3IiwiYSI6ImNqbmN0bzBnMjF6a2Mzd29lbmE3bGEwNDgifQ.R1Jt4Dnw9ZlttW6AJS10fA'
+                }).addTo(mymap);
+                makeLocation({X:x,Y:y})
+                // console.log(x,y)
+                document.getElementById('content').innerHTML+=x+","+y+"<br/>";
+                // console.log(position.coords.latitude, position.coords.longitude);
+            }
+            
+            function error() {
+              console.log('Sorry, no position available.');
+            }
+            
+            const options = {
+              enableHighAccuracy: true, 
+              maximumAge: 30000, 
+              timeout: 27000
+            };
+            
+            var watchID = navigator.geolocation.watchPosition(success, error, options);
+            
+            // var location_test={X:32.5, Y:118.09,info:"<b>Hello world!</b><br>I am a popup."};
+            
+            function _s(str){
+                if(!str){
+                    return "";
+                }
+                return str;
+            }
+            function makeLocation(location){
+                if(!(location.X&&location.Y)){
+                    return;
+                }
+                var icon_img="grey";;
+                var error_info;
+                
+                var icon= new L.Icon({
+                  iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-'+icon_img+'.png',
+                  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                });
+                var marker = L.marker([location.X,location.Y]/*, {icon: icon}*/).addTo(mymap);
+                var info="";
+                
+                // marker.bindPopup(info).openPopup();
+                function onMapClick(e) {
+                    /*this
+                        .setLatLng(e.latlng)
+                        .setContent("You clicked the map at " + e.latlng.toString())*/
+                }
+                marker.on('click', onMapClick);
+            }
+            function showDevice(obj){
+                if(deviceInfos){
+                    var deviceInfo=deviceInfos.find((e)=>{
+                    	if(e.id==obj.id)
+                    	    return true;
+                    })
+                    // var result=confirm("是否查看设备"+deviceInfo.name+"?");
+                    // if(result){
+                    //     console.log(deviceInfo);
+                    // }
+                }
+            }
+            var deviceInfos;
+            function loadDevices(){
+                $.ajax({
+                    url: '/getDevices',
+                    method: "GET",
+                    // data: formData,
+                    // enctype: 'multipart/form-data',
+                    //contentType:"application/x-javascript; charset:ISO-8859-1"
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    cache: false,
+                    success: function (response) {
+                        deviceInfos=response;
+                        for(var i=0;i<response.length;i++){
+                            makeLocation(response[i]);
+                        }
+                    }
+                });
+            }
+            // loadDevices();
+        </script>
+    </body>
+</html>
