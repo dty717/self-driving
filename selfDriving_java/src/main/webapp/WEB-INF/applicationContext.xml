@@ -39,10 +39,30 @@
     <!-- enable transactiondemarcation  with annotations -->
     <tx:annotation-driven />
 
-    
+    <!-- enable transactiondemarcation  with annotations -->
+    <tx:annotation-driven />
+    <mvc:resources mapping="/**" location="/" />
 
+    <bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="url" value="jdbc:mysql://localhost:3306/ide?allowMultiQueries=true"></property>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="root"></property>
+    </bean>
+    
     <mvc:annotation-driven>
 
     </mvc:annotation-driven>
+    <!-- define the SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
     
+    <!-- transaction manager, use DataSourceTransactionManager" for JDBC local tx -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    
+    <mybatis:scan base-package="selfDriving.mapper" />
+
 </beans>

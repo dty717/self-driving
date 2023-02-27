@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="capture.js"></script>
+    <!-- <script>
+        a = `1231
+2131`
+    </script> -->
+</head>
+<body>
+
+    <canvas id="myCanvas" width="1600" height="800" style="border:1px solid #d3d3d3;">
+        Your browser does not support the HTML canvas tag.</canvas>
+
+    <script>
+        // const imageData = ctx.getImageData(0, 0, 100, 100);
+        // const data = imageData.data;
+        // for (let i = 0; i < data.length; i += 4) {
+        //     data[i] = 255 - data[i]; // red
+        //     data[i + 1] = 255 - data[i + 1]; // green
+        //     data[i + 2] = 255 - data[i + 2]; // blue
+        // }
+        // ctx.putImageData(imageData, 0, 0);
+        var bits = a.trim().split('\n').map(e=>parseInt(e))
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        var red_mask = 0xF800;
+        var green_mask = 0x7E0;
+        var blue_mask = 0x1F;
+
+        // var red_mask = 0x7C00;
+        // var green_mask = 0x3E0;
+        // var blue_mask = 0x1F;
+        
+        var width = 320
+        var height = 240
+
+        // var width = 160
+        // var height = 120
+
+        var imageData = ctx.getImageData(0, 0, width, height);
+        // bits = bits.reverse()
+
+        function reverseColor(value,length){
+            return eval("0b"+(value.toString(2).split('').reverse().join('')+'00000').substring(0,length))
+        }
+        for (let i = 0; i < width; i++) {
+            for (let j = 0; j < height; j++) {
+                var bitIndex = i * height + j
+                var pixel = parseInt(bits[bitIndex])
+
+                var green_value = ((pixel & 0b111) << 3) ^ (pixel >> 13);
+                var blue_value = (pixel >> 8) & 0b11111;
+                var red_value = (pixel >> 3) & 0b11111;
+                var red   = red_value << 3;
+                var green = green_value << 2;
+                var blue  = blue_value << 3;
+                // var red = reverseColor(red_value, 5) << 3;
+                // var green = reverseColor(green_value, 6) << 2;
+                // var blue = reverseColor(blue_value, 5) << 3;
+
+                // var red_value = (pixel & red_mask) >> 11;
+                // var green_value = (pixel & green_mask) >> 5;
+                // var blue_value = (pixel & blue_mask);
+                // var red   = red_value << 3;
+                // var green = green_value << 2;
+                // var blue  = blue_value << 3;
+
+                // var red_value = (pixel & red_mask) >> 11;
+                // var green_value = (pixel & green_mask) >> 5;
+                // var blue_value = (pixel & blue_mask);
+                // var red   = red_value << 3;
+                // var green = green_value << 2;
+                // var blue  = blue_value << 3;
+
+                // var red_value = (pixel & red_mask) >> 10;
+                // var green_value = (pixel & green_mask) >> 5;
+                // var blue_value = (pixel & blue_mask);
+                // var red   = red_value << 3;
+                // var green = green_value << 3;
+                // var blue  = blue_value << 3;
+
+                // mapBit = / 0xffff * 0xffffff)
+                imageData.data[bitIndex * 4] = red
+                imageData.data[bitIndex * 4 + 1] = green
+                imageData.data[bitIndex * 4 + 2] = blue
+                imageData.data[bitIndex * 4 + 3] = 0xff
+            }
+        }
+        function rotateImage90(imageData){
+            var dataURI= canvas.toDataURL('image/jpeg'); // can also use 'image/png'
+            var img = new Image()
+            img.src = dataURI
+            img.onload = function(){
+                ctx.clearRect(-10000, -10000, 100000, 100000)
+                ctx.rotate(-Math.PI / 180 * 104)
+                ctx.drawImage(img, -600, 400)
+            }
+        }
+        function rotateImage180(imageData){
+            var dataURI= canvas.toDataURL('image/jpeg'); // can also use 'image/png'
+            var img = new Image()
+            img.src = dataURI
+            img.onload = function(){
+                ctx.clearRect(-10000, -10000, 100000, 100000)
+                ctx.rotate(-Math.PI / 180 * 180)
+                ctx.drawImage(img, -400, -200)
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        // rotateImage180(imageData)
+    </script>
+
+</body>
+
+</html>

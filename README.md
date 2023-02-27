@@ -16,3 +16,4 @@
 * [A toy car for Self-Driving](https://github.com/RyanZotti/Self-Driving-Car ): Self Driving (Toy) Ferrari
 * [open source driving agent](https://comma.ai/): openpilot is an open source driver assistance system
 * [a specialist in detecting car speed](http://www.clemensrabe.com/): very useful papers for detecting cars' speed
+* [ov7670 implement in ESP32](https://github.com/bitluni/LEDWallCamera): ov7670 camera

@@ -17,7 +17,6 @@
             }
         </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
         
     </head>
     <body>
@@ -31,30 +30,52 @@
             var begin=new Date().getTime();
             var index=0;
             
-            function nextLocation(){
-                if(new Date().getTime()>(begin+index*50000)){
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        var x=position.coords.latitude;
-                        var y=position.coords.longitude
-                        mymap.setView([x,y], 14);
-                        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-                            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                            maxZoom: 15,
-                            id: 'mapbox.streets',
-                            accessToken: 'pk.eyJ1IjoiZHR5NzE3IiwiYSI6ImNqbmN0bzBnMjF6a2Mzd29lbmE3bGEwNDgifQ.R1Jt4Dnw9ZlttW6AJS10fA'
-                        }).addTo(mymap);
-                        makeLocation({X:x,Y:y})
+            function nextLocation() {
+                console.log(123)
+                    //if(true/*new Date().getTime()>(begin+index*5000)*/){
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    console.log(position)
+                    var x = position.coords.latitude;
+                    var y = position.coords.longitude
+                    mymap.setView([x, y], 14);
+                    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                        maxZoom: 15,
+                        id: 'mapbox.streets',
+                        accessToken: 'pk.eyJ1IjoiZHR5NzE3IiwiYSI6ImNqbmN0bzBnMjF6a2Mzd29lbmE3bGEwNDgifQ.R1Jt4Dnw9ZlttW6AJS10fA'
+                    }).addTo(mymap);
+
+                    makeLocation({
+                            X: x,
+                            Y: y
+                        })
                         // console.log(x,y)
-                        document.getElementById('content').innerHTML+=x+","+y+"<br/>";
-                        // console.log(position.coords.latitude, position.coords.longitude);
-                    }); 
-                    index++;
-                }else{
-                    // console.log(begin+index*50000);
-                }
-                setTimeout(nextLocation, 50000);
-            }
-            setTimeout(nextLocation, 5000);
+                    document.getElementById('content').innerHTML += x + "," + y + "<br/>";
+                    $.ajax({
+                        url: '/position',
+                        method: "GET",
+                        data: {x:x,y:y,deviceType:navigator.userAgent},
+                        // enctype: 'multipart/form-data',
+                        //contentType:"application/x-javascript; charset:ISO-8859-1"
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        cache: false,
+                        success: function (response) {
+                            
+                        }
+                    });
+                    console.log({
+                        x: x,
+                        y: y,
+                        deviceType: navigator.userAgent
+                    })
+                    setTimeout(nextLocation, 5000);
+                    // console.log(position.coords.latitude, position.coords.longitude);
+                });
+                //}else{
+                // console.log(begin+index*50000);
+                //}
+            }            setTimeout(nextLocation, 15000);
             
             function success(position) {
                 var x=position.coords.latitude;
