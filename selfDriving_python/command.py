@@ -1,28 +1,9 @@
-
-class CommandCode:
-    CommandIdle = 0
-    CommandGPS = 1
-    CommandGPS_Forever = 2
-    CommandEval = 3
-    CommandEval_Forever = 4
-    CommandCam = 5
-    CommandMotor = 6
-    CommandMotor1 = 7
-    CommandMotor2 = 8
-    CommandLED = 9
-    CommandReset = 10
-    CommandReBoot = 11
-    CommandResetBoot = 12
-    CommandTemporary = 13
-    CommandUpdate = 14
-    CommandUpload = 15
-    CommandLog = 16
-    CommandOS = 17
-
+from config import CommandCode, commondCodeInit
 
 class Command:
     def __init__(self):
         self.resetAll()
+        self.commondCode = commondCodeInit
     def handleReceive(self, channel, channelRecBuf):
         self.commondStr = channelRecBuf
         if channelRecBuf.find(b'[|gps|]') != -1:
@@ -81,8 +62,10 @@ class Command:
             self.upload = channelRecBuf[channelRecBuf.find(b'[|upload|]:') + len(b'[|upload|]:'):]
         elif channelRecBuf.find(b'[|log|]') != -1:
             self.commondCode = CommandCode.CommandLog
-        elif channelRecBuf.find(b'[|OS|]') != -1:
+        elif channelRecBuf.find(b'[|os|]') != -1:
             self.commondCode = CommandCode.CommandOS
+        elif channelRecBuf.find(b'[|os forever|]') != -1:
+            self.commondCode = CommandCode.CommandOS_Forever
         # 
         # 
         return

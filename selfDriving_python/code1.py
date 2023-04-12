@@ -30,7 +30,7 @@ from config import initString, url, networkType, channel, port
 
 adc3 = analogio.AnalogIn(board.A3)
 def getVoltage():
-    return adc3.value / 2 ** 16 *3.3 *3
+    return adc3.value / 65535 *3.3 *3
 
 def getTemperature():
     return microcontroller.cpu.temperature
@@ -39,7 +39,13 @@ led = digitalio.DigitalInOut(board.GP25)
 led.direction = digitalio.Direction.OUTPUT
 watchdog.timeout = 8  # Set a timeout of 2.5 seconds
 watchdog.mode = WatchDogMode.RESET
-time.sleep(5)
+index = 5
+while index > 0:
+    index -= 1
+    led.value = led.value ^ 0b1
+    time.sleep(1)
+
+led.value = 0
 watchdog.feed()
 
 logger.initLog()
@@ -449,6 +455,8 @@ while True:
             elif commandState.commondCode == command.CommandCode.CommandOS:
                 uploadData(client, ("temperature:"+str(getTemperature())+",voltage:"+str(getVoltage())).encode())
                 commandState.reset()
+            elif commandState.commondCode == command.CommandCode.CommandOS_Forever:
+                uploadData(client, ("temperature:"+str(getTemperature())+",voltage:"+str(getVoltage())).encode())
             elif heartbeatTime > 0:
                 heartbeatTime -= 1
             elif heartbeatTime <= 0:
