@@ -1,0 +1,30 @@
+b'AT+CIFSR\r\r\n'
+b'10.39.170.174\r\n'
+b'AT+CIPSTART=2,"udp","155.138.195.23",41234\r\r\n'
+b'OK\r\n'
+b'\r\n'
+b'2, CONNECT OK\r\n'
+b'AT+CIPSEND=2,11\r\r\n'
+b'> '
+b'ABC:1000001\r\n\r\n2, SEND OK\r\n'
+2020-1-1 2:21:37
+b'AT+CIPSEND=2,109\r\r\n'
+b'> '
+b'temperature:36.5012,self voltage:4.07511,solar voltage:0.721198,output voltage:24.8579,output current:5.57274\r\n\r\n2, SEND OK\r\n'
+2020-1-1 2:22:2
+b'AT+CIPSEND=2,109\r\r\n'
+b'> '
+b'temperature:36.5012,self voltage:4.07752,solar voltage:0.732125,output voltage:24.8119,output current:5.49209\r\n\r\n2, SEND OK\r\n'
+2020-1-1 2:22:27
+b'AT+CIPSEND=2,109\r\r\n'
+b'> '
+b'temperature:36.5012,self voltage:4.06544,solar voltage:0.600998,output voltage:24.8382,output current:5.38322\r\n\r\n2, SEND OK\r\n'
+2020-1-1 2:22:52
+b'AT+CIPSEND=2,109\r\r\n'
+b'> '
+b'temperature:36.5012,self voltage:4.07994,solar voltage:0.753979,output voltage:24.8579,output current:5.62694\r\n\r\n2, SEND OK\r\n'
+2020-1-1 2:23:17
+b'AT+CIPSEND=2,108\r\r\n'
+b'> '
+b'temperature:36.5012,self voltage:4.06786,solar voltage:0.732125,output voltage:24.8447,output current:5.6835\r\n\r\n2, SEND OK\r\n'
+2020-1-1 2:23:42

@@ -1,9 +1,9 @@
 """CircuitPython Essentials UART Serial example"""
-from board import GP0,GP1
-from busio import UART
-from time import sleep,struct_time
+import board
+import busio
+import time
 
-uart = UART(GP0, GP1, baudrate=9600, stop=1, parity=None)
+uart = busio.UART(board.GP0, board.GP1, baudrate=9600, stop=1, parity=None)
 
 
 class Client:
@@ -74,7 +74,7 @@ def simpleHandle(data):
 def sim_ok():
     simpleHandle(uart.read())
     uart.write(b'AT\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     if res == b'AT\r\r\n':
         res = uart.readline()
@@ -87,11 +87,10 @@ def sim_ok():
 def sim_checkIfOpen():
     simpleHandle(uart.read())
     uart.write(b'AT+CFUN?\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     if res == b'AT+CFUN?\r\r\n':
         res = uart.readline()
-    print(res)
     if res == b'+CFUN: 1\r\n':
         res = uart.readline()
         if res == b'\r\n':
@@ -115,7 +114,7 @@ def sim_checkIfOpen():
 def sim_close():
     simpleHandle(uart.read())
     uart.write(b'AT+CFUN=0\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == b'AT+CFUN=0\r\r\n':
@@ -126,7 +125,7 @@ def sim_close():
     if res == b'OK\r\n':
         return True
     elif res == b'+CPIN: NOT READY\r\n':
-        sleep(5)
+        time.sleep(5)
         res = uart.readline()
         print(res)
         if res == b'\r\n':
@@ -142,7 +141,7 @@ def sim_close():
 def sim_open():
     simpleHandle(uart.read())
     uart.write(b'AT+CFUN=1\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == '\r\n':
@@ -160,7 +159,7 @@ def sim_open():
                 res = uart.readline()
                 print(res)
             if res == b'OK\r\n':
-                sleep(7)
+                time.sleep(7)
                 print("sim open:")
                 print(uart.read())
                 return True
@@ -173,7 +172,7 @@ def sim_open():
 def sim_checkForSignal():
     simpleHandle(uart.read())
     uart.write(b'AT+CSQ\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     if res == b'AT+CSQ\r\r\n':
         res = uart.readline()
@@ -194,11 +193,10 @@ def sim_checkForSignal():
 def sim_checkIfConnected():
     simpleHandle(uart.read())
     uart.write(b'AT+CGATT?\r\n')
-    sleep(0.5)
+    time.sleep(0.5)
     res = uart.readline()
     if res == b'AT+CGATT?\r\r\n':
         res = uart.readline()
-    print(res)
     if res == b'+CGATT: 1\r\n':
         res = uart.readline()
         if res == b'\r\n':
@@ -219,7 +217,7 @@ def sim_checkIfConnected():
 def sim_detactFromGPRS():
     simpleHandle(uart.read())
     uart.write(b'AT+CGATT=0\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == b'AT+CGATT=0\r\r\n':
@@ -238,7 +236,7 @@ def sim_detactFromGPRS():
 def sim_attachToGPRS():
     simpleHandle(uart.read())
     uart.write(b'AT+CGATT=1\r\n')
-    sleep(3)
+    time.sleep(3)
     res = uart.readline()
     print(res)
     if res == b'AT+CGATT=1\r\r\n':
@@ -257,7 +255,7 @@ def sim_attachToGPRS():
 def sim_checkGPRSContext():
     simpleHandle(uart.read())
     uart.write(b'AT+SAPBR=2,1\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == b'AT+SAPBR=2,1\r\r\n':
@@ -283,7 +281,7 @@ def sim_checkGPRSContext():
 def sim_openGPRSContext():
     simpleHandle(uart.read())
     uart.write(b'AT+SAPBR=1,1\r\n')
-    sleep(3)
+    time.sleep(3)
     res = uart.readline()
     print(res)
     if res == b'AT+SAPBR=1,1\r\r\n':
@@ -301,7 +299,7 @@ def sim_openGPRSContext():
 def sim_setNTPUseBearProfile1():
     simpleHandle(uart.read())
     uart.write(b'AT+CNTPCID=1\r\n')
-    sleep(3)
+    time.sleep(3)
     res = uart.readline()
     print(res)
     if res == b'AT+CNTPCID=1\r\r\n':
@@ -320,7 +318,7 @@ def sim_setNTPServer(ntpServer,timeZone):
     simpleHandle(uart.read())
     setNTPServerStr = ('AT+CNTP="'+str(ntpServer)+'",'+str(timeZone))
     uart.write((setNTPServerStr+'\r\n').encode())
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == (setNTPServerStr+'\r\r\n').encode():
@@ -342,11 +340,11 @@ def sim_setNTPServer(ntpServer,timeZone):
 def sim_startSynchronizeNTP():
     simpleHandle(uart.read())
     uart.write(b'AT+CNTP\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == b'AT+CNTP\r\r\n':
-        sleep(1)
+        time.sleep(1)
         res = uart.readline()
         print(res)
     if res == b'\r\n':
@@ -376,7 +374,7 @@ def sim_checkSynchronizeNTP():
 def sim_getLocalTime():
     simpleHandle(uart.read())
     uart.write(b'AT+CCLK?\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     localTime = None
@@ -387,7 +385,7 @@ def sim_getLocalTime():
         timeStr = res[6:].strip()
         if timeStr.startswith('"') and timeStr.endswith('"'):
             print(timeStr[1:-1])
-            localTime = struct_time((int(timeStr[1:3])+2000, int(timeStr[4:6]),int(timeStr[7:9]),int(timeStr[10:12]),int(timeStr[13:15]),int(timeStr[16:18]),-1,-1,-1))
+            localTime = time.struct_time((int(timeStr[1:3])+2000, int(timeStr[4:6]),int(timeStr[7:9]),int(timeStr[10:12]),int(timeStr[13:15]),int(timeStr[16:18]),-1,-1,-1))
     else:
         return False
     res = uart.readline()
@@ -405,7 +403,7 @@ def sim_getLocalTime():
 def sim_enableMultiConnection():
     simpleHandle(uart.read())
     uart.write(b'AT+CIPMUX=1\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == b'AT+CIPMUX=1\r\r\n':
@@ -424,7 +422,7 @@ def sim_enableMultiConnection():
 def sim_ping():
     simpleHandle(uart.read())
     uart.write(b'AT+CSTT\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == b'AT+CSTT\r\r\n':
@@ -443,11 +441,11 @@ def sim_ping():
 def sim_bringUpWirelessConnection():
     simpleHandle(uart.read())
     uart.write(b'AT+CIICR\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == b'AT+CIICR\r\r\n':
-        sleep(5)
+        time.sleep(5)
         res = uart.readline()
         print(res)
     if res == b'\r\n':
@@ -463,7 +461,7 @@ def sim_bringUpWirelessConnection():
 def sim_getLocalIPAddress():
     simpleHandle(uart.read())
     uart.write(b'AT+CIFSR\r\n')
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res.endswith(b'AT+CIFSR\r\r\n'):
@@ -479,7 +477,7 @@ def sim_getLocalIPAddress():
 def sim_resetIP():
     simpleHandle(uart.read())
     uart.write(b'AT+CIPSHUT\r\n')
-    sleep(3)
+    time.sleep(3)
     res = uart.readline()
     print(res)
     if res == b'AT+CIPSHUT\r\r\n':
@@ -500,7 +498,7 @@ def sim_startConnection(channel, networkType, url, port):
     startConnectionStr = ('AT+CIPSTART='+str(channel)+',"' +
                           networkType+'","'+url+'",'+str(port))
     uart.write((startConnectionStr+'\r\n').encode())
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == (startConnectionStr+'\r\r\n').encode():
@@ -510,7 +508,7 @@ def sim_startConnection(channel, networkType, url, port):
         res = uart.readline()
         print(res)
         if res == b'\r\n':
-            sleep(5.5)
+            time.sleep(5.5)
             res = uart.readline()
             print(res)
         if res == (str(channel)+', CONNECT OK\r\n').encode():
@@ -534,11 +532,11 @@ def sim_dataSending(channel, dataBuf):
     simpleHandle(uart.read())
     dataSendingStr = 'AT+CIPSEND='+str(channel)+','+str(len(dataBuf))
     uart.write((dataSendingStr+'\r\n').encode())
-    sleep(0.1)
+    time.sleep(0.1)
     res = uart.readline()
     print(res)
     if res == (dataSendingStr+'\r\r\n').encode():
-        sleep(0.5)
+        time.sleep(0.5)
         res = uart.readline()
         print(res)
     if res.find(b'ERROR\r\n') != -1:
@@ -551,7 +549,7 @@ def sim_dataSending(channel, dataBuf):
 # def sim_dataReceiving(dataBuf):
 #     return
   
-# sleep(3+len(dataStr)/300)
+# time.sleep(3+len(dataStr)/300)
         # res = uart.read()
         # print(res)
         # if res.startswith(dataStr.encode()) and res.endwith((str(channel)+', SEND OK\r\n').encode()):

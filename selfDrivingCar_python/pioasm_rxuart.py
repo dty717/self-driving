@@ -4,10 +4,10 @@
 #
 # Adapted from the example https://github.com/raspberrypi/pico-examples/tree/master/pio/hello_pio
 
-from time import time
-from board import GP20
-from rp2pio import StateMachine
-from adafruit_pioasm import assemble
+import time
+import board
+import rp2pio
+import adafruit_pioasm
 
 time_zone_shift = 8
 lat_deg = 30
@@ -32,17 +32,17 @@ good_stop:              ; No delay before returning to start; a little slack is
     push                ; important in case the TX clock is slightly too fast.
 """
 
-assembled = assemble(uart_rx)
+assembled = adafruit_pioasm.assemble(uart_rx)
 
-sm = StateMachine(
+sm = rp2pio.StateMachine(
     assembled,
     frequency=9600*8,
-    first_in_pin=GP20,
-    jmp_pin=GP20
+    first_in_pin=board.GP20,
+    jmp_pin=board.GP20
 )
 
 def usbOutput(handle=print, during=10, errorDebug=False):
-    now = time()
+    now = time.time()
     buf = bytearray(100)
     bufStr = ""
     while True:
@@ -54,14 +54,14 @@ def usbOutput(handle=print, during=10, errorDebug=False):
                 if errorDebug:
                     print("error")
                     print(buf)
-                    if time() - now > during:
+                    if time.time() - now > during:
                         return
                 continue
             bufStrList = bufStr.split('\r\n')
             for e in bufStrList[0:-1]:
                 handle(e)
             bufStr = bufStrList[-1]
-        if time() - now > during:
+        if time.time() - now > during:
             return
 
 

@@ -1,0 +1,12 @@
+function:
+	work as BMS
+	waterproof
+	disconnect when low power(low power protection)
+	simplicity(easy install,easy configure)
+	balance charge
+	work long time
+	parameters
+	large capacity
+	temperature sensor for cold climates
+usage:
+	E-bike

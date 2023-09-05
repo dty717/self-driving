@@ -1,98 +1,130 @@
-
-import time
+from time import sleep, monotonic_ns
 from displayio import (
     Bitmap,
-    Group,
-    TileGrid,
-    FourWire,
-    release_displays,
-    ColorConverter,
-    Colorspace,
+    # Group,
+    # TileGrid,
+    # FourWire,
+    # release_displays,
+    # ColorConverter,
+    # Colorspace,
 )
 from adafruit_ov7670 import (
     OV7670,
-    OV7670_SIZE_DIV1,
-    OV7670_SIZE_DIV16,
+    # OV7670_SIZE_DIV1,
+    # OV7670_SIZE_DIV16,
 )
-import board
-import busio
-import digitalio
-import sys
-
+from board import GP7, GP8, GP9, GP10, GP11, GP12, GP13, GP14, GP15, GP16, GP17, GP18, GP19, GP21, GP22
+from busio import I2C
+from digitalio import DigitalInOut
+# import 
+from usb_cdc import data
 # Ensure the camera is shut down, so that it releases the SDA/SCL lines,
 # then create the configuration I2C bus
 
-with digitalio.DigitalInOut(board.GP10) as reset:
+with DigitalInOut(GP10) as reset:
     reset.switch_to_output(False)
-    time.sleep(0.001)
+    sleep(0.001)
 
 bus = None
 cam = None
 bitmap = None
 try:
-    bus = busio.I2C(board.GP9, board.GP8)
+    bus = I2C(GP9, GP8)
     cam = OV7670(
         bus,
         data_pins=[
-            board.GP12,
-            board.GP13,
-            board.GP14,
-            board.GP15,
-            board.GP16,
-            board.GP17,
-            board.GP18,
-            board.GP19,
+            GP12,
+            GP13,
+            GP14,
+            GP15,
+            GP16,
+            GP17,
+            GP18,
+            GP19,
         ],  # [16]     [org] etc
-        clock=board.GP11,  # [15]     [blk]
-        vsync=board.GP7,  # [10]     [brn]
-        href=board.GP22,  # [27/o14] [red]
-        mclk=board.GP10,  # [16/o15]
+        clock=GP11,  # [15]     [blk]
+        vsync=GP7,  # [10]     [brn]
+        href=GP22,  # [27/o14] [red]
+        mclk=GP10,  # [16/o15]
         shutdown=None,
-        reset=board.GP21,
+        reset=GP21,
     )  # [14]
     cam.size = 1
     bitmap = Bitmap(cam.width, cam.height, 65536)
 except Exception as e:
+    bus = None
+    cam = None
+    bitmap = None
+    print(e)
     pass
     # error = e.strerror
     # logging = False
 
-# power = digitalio.DigitalInOut(board.GP6)
-# power.direction = digitalio.Direction.OUTPUT
+# power = DigitalInOut(GP6)
+# power.direction = Direction.OUTPUT
 
 # Set up the camera (you must customize this for your board!)
 
 
-def handleOV7670Data(handleFun):
-    if cam:
-        # lastTime = time.time()
-        cam.capture(bitmap)
-        bitmap.dirty()
-        handleFun(bitmap)
+# def handleOV7670Data(handleFun):
+#     if cam:
+#         # lastTime = time()
+#         cam.capture(bitmap)
+#         bitmap.dirty()
+#         handleFun(bitmap)
 
-def r():
-    if cam:
-        # lastTime = time.time()
-        cam.capture(bitmap)
-        bitmap.dirty()
-        print('a=`')
-        for i in range(cam.width*cam.height):
-            print(bitmap[i])
-        print('`')
-        print('mm=`')
-    # print(time.time()-lastTime)
+
+# def r1():
+#     if cam:
+#         # lastTime = time()
+#         cam.capture(bitmap)
+#         bitmap.dirty()
+#         print('a=`')
+#         for i in range(cam.width*cam.height):
+#             print(bitmap[i])
+#         print('`')
+#         print('mm=`')
+#     # print(time()-lastTime)
+
 
 # def r():
-#     lastTime = time.time()
+#     if cam:
+#         cam.capture(bitmap)
+#         bitmap.dirty()
+#         lastTime = monotonic_ns()
+#         for i in range(cam.width*cam.height/32):
+#             data.write(bytes([
+#                 bitmap[32*i] >> 8, bitmap[32*i] & 0xff, bitmap[32*i+1] >> 8, bitmap[32*i+1] & 0xff, bitmap[32 *
+#                                                                                                            i+2] >> 8, bitmap[32*i+2] & 0xff, bitmap[32*i+3] >> 8, bitmap[32*i+3] & 0xff,
+#                 bitmap[32*i+4] >> 8, bitmap[32*i+4] & 0xff, bitmap[32*i+5] >> 8, bitmap[32*i +
+#                                                                                         5] & 0xff, bitmap[32*i+6] >> 8, bitmap[32*i+6] & 0xff, bitmap[32*i+7] >> 8, bitmap[32*i+7] & 0xff,
+#                 bitmap[32*i+8] >> 8, bitmap[32*i+8] & 0xff, bitmap[32*i+9] >> 8, bitmap[32*i+9] & 0xff, bitmap[32 *
+#                                                                                                                i+10] >> 8, bitmap[32*i+10] & 0xff, bitmap[32*i+11] >> 8, bitmap[32*i+11] & 0xff,
+#                 bitmap[32*i+12] >> 8, bitmap[32*i+12] & 0xff, bitmap[32*i+13] >> 8, bitmap[32*i+13] & 0xff, bitmap[32 *
+#                                                                                                                    i+14] >> 8, bitmap[32*i+14] & 0xff, bitmap[32*i+15] >> 8, bitmap[32*i+15] & 0xff,
+#                 bitmap[32*i+16] >> 8, bitmap[32*i+16] & 0xff, bitmap[32*i+17] >> 8, bitmap[32*i+17] & 0xff, bitmap[32 *
+#                                                                                                                    i+18] >> 8, bitmap[32*i+18] & 0xff, bitmap[32*i+19] >> 8, bitmap[32*i+19] & 0xff,
+#                 bitmap[32*i+20] >> 8, bitmap[32*i+20] & 0xff, bitmap[32*i+21] >> 8, bitmap[32*i+21] & 0xff, bitmap[32 *
+#                                                                                                                    i+22] >> 8, bitmap[32*i+22] & 0xff, bitmap[32*i+23] >> 8, bitmap[32*i+23] & 0xff,
+#                 bitmap[32*i+24] >> 8, bitmap[32*i+24] & 0xff, bitmap[32*i+25] >> 8, bitmap[32*i+25] & 0xff, bitmap[32 *
+#                                                                                                                    i+26] >> 8, bitmap[32*i+26] & 0xff, bitmap[32*i+27] >> 8, bitmap[32*i+27] & 0xff,
+#                 bitmap[32*i+28] >> 8, bitmap[32*i+28] & 0xff, bitmap[32*i+29] >> 8, bitmap[32*i+29] & 0xff, bitmap[32 *
+#                                                                                                                    i+30] >> 8, bitmap[32*i+30] & 0xff, bitmap[32*i+31] >> 8, bitmap[32*i+31] & 0xff,
+#             ]))
+#         print((monotonic_ns()-lastTime)/1000000000)
+
+
+# def r():
+#     lastTime = monotonic_ns()
 #     cam.capture(bitmap)
 #     bitmap.dirty()
 #     bufTem = []
 #     for i in range(cam.width*cam.height):
 #         sys.stdout.write(bytes([bitmap[i]&0xff,bitmap[i]>>8]))
-#     print(time.time()-lastTime)
+#     print((monotonic_ns()-lastTime)/1000000000)
 
 # def r():
-#     lastTime = time.time()
+#     lastTime = time()
 #     cam.capture(bitmap)
 #     bitmap.dirty()
 #     strTem = ''
@@ -102,7 +134,7 @@ def r():
 #             strTem+=str(bitmap[indexBuf])+'\n'
 #         print(strTem)
 #         strTem = ''
-#     print(time.time()-lastTime)
+#     print(time()-lastTime)
 
 
 def re(reg):
@@ -110,10 +142,11 @@ def re(reg):
     b[0] = reg
     if bus:
         bus.try_lock()
-        bus.writeto(33,b)
-        bus.readfrom_into(33,b)
+        bus.writeto(33, b)
+        bus.readfrom_into(33, b)
         bus.unlock()
     return b[0]
+
 
 def w(reg, value):
     b = bytearray(2)
@@ -121,11 +154,12 @@ def w(reg, value):
     b[1] = value
     if bus:
         bus.try_lock()
-        bus.writeto(33,b)
+        bus.writeto(33, b)
         bus.unlock()
-        time.sleep(0.1)
+        sleep(0.1)
 
-def configOV7670():
+
+def configOV7670(nightMode=False):
     ### Frame Rate Adjustment for 24Mhz input clock
     # #30 fps, PCLK = 24Mhz
     # w(0x11, 0x80)
@@ -135,7 +169,7 @@ def configOV7670():
     # w(0x92, 0x00)
     # w(0x93, 0x00)
     # w(0x3b, 0x0a)
-    # 
+    #
     # 15 fps, PCLK = 12Mhz
     w(0x11, 0x00)
     w(0x6b, 0x0a)
@@ -144,7 +178,7 @@ def configOV7670():
     w(0x92, 0x00)
     w(0x93, 0x00)
     w(0x3b, 0x0a)
-    # 
+    #
     ### Banding Filter Setting for 24Mhz Input Clock
     # # 30fps for 60Hz light frequency
     # w(0x13, 0xe7)  #banding filter enable
@@ -153,15 +187,15 @@ def configOV7670():
     # w(0xa5, 0x02)  #3 step for 50hz
     # w(0xab, 0x03)  #4 step for 60hz
     # w(0x3b, 0x02)  #Select 60Hz banding filter
-    # 
+    #
     # 15fps for 60Hz light frequency
-    w(0x13, 0xe7)  #banding filter enable
-    w(0x9d, 0x4c)  #50Hz banding filter
-    w(0x9e, 0x3f)  #60Hz banding filter
-    w(0xa5, 0x05)  #6 step for 50hz
-    w(0xab, 0x07)  #8 step for 60hz
-    w(0x3b, 0x02)  #Select 60Hz banding filter
-    # 
+    w(0x13, 0xe7)  # banding filter enable
+    w(0x9d, 0x4c)  # 50Hz banding filter
+    w(0x9e, 0x3f)  # 60Hz banding filter
+    w(0xa5, 0x05)  # 6 step for 50hz
+    w(0xab, 0x07)  # 8 step for 60hz
+    w(0x3b, 0x02)  # Select 60Hz banding filter
+    #
     ### Banding Filter Setting for 24Mhz Input Clock
     # # 30fps for 60Hz light frequency
     # w(0x13, 0xe7)  #banding filter enable
@@ -170,15 +204,15 @@ def configOV7670():
     # w(0xa5, 0x02)  #3 step for 50hz
     # w(0xab, 0x03)  #4 step for 60hz
     # w(0x3b, 0x12)  #Automatic Detect banding filter
-    # 
+    #
     # 15fps for 60Hz light frequency
-    w(0x13, 0xe7)  #banding filter enable
-    w(0x9d, 0x4c)  #50Hz banding filter
-    w(0x9e, 0x3f)  #60Hz banding filter
-    w(0xa5, 0x05)  #6 step for 50hz
-    w(0xab, 0x07)  #8 step for 60hz
-    w(0x3b, 0x12)  #Automatic Detect banding filter
-    # 
+    w(0x13, 0xe7)  # banding filter enable
+    w(0x9d, 0x4c)  # 50Hz banding filter
+    w(0x9e, 0x3f)  # 60Hz banding filter
+    w(0xa5, 0x05)  # 6 step for 50hz
+    w(0xab, 0x07)  # 8 step for 60hz
+    w(0x3b, 0x12)  # Automatic Detect banding filter
+    #
     # # fps_30_PCLK_24Mhz_light_60Hz = 0xa1
     # fps_3_125 = 3.125
     # fps_3_75 = 3.75
@@ -186,31 +220,32 @@ def configOV7670():
     # fps_15 = 15
     # fps_25 = 25
     # fps_30 = 30
-    # 
+    #
     # PCLK_12Mhz = 12
     # PCLK_13Mhz = 13
     # PCLK_24Mhz = 24
     # PCLK_26Mhz = 26
-    # 
+    #
     # light_60Hz = 60
-    # 
+    #
     # def setCameraConfig(fps,PCLK,light):
     #     return
-    # 
+    #
     # Light Mode
     # Cloudy
     # w(0x13, 0xe5)  #AWB off
     # w(0x01, 0x58)
     # w(0x02, 0x60)
-    # 
+    #
     # Sunny
     # w(0x13, 0xe5) #AWB off
     # w(0x01, 0x5a)
     # w(0x02, 0x5c)
     # Auto
-    w(0x13, 0xe7)  #AWB on
-    # 
+    w(0x13, 0xe7)  # AWB on
+    #
     # For 24Mhz/26Mhz Clock Input
     # # 3.75fps night mode for 60Hz light environment
-    # w(0x11, 0x03)
-    # w(0x3b, 0x0a)
+    if nightMode:
+        w(0x11, 0x03)
+        w(0x3b, 0x0a)

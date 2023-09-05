@@ -1,7 +1,7 @@
-from microcontroller import reset
-from rtc import RTC
+import microcontroller
+import rtc
 
-rtcTime = RTC()
+rtcTime = rtc.RTC()
 logging = False
 logInfoPage = 0
 
@@ -40,7 +40,7 @@ def resetBootMode():
         bootFile.write('#storage.remount("/", False)\r\n')
         bootFile.flush()
         bootFile.close()
-        reset()
+        microcontroller.reset()
         return True
     except Exception as e:
         print(e)

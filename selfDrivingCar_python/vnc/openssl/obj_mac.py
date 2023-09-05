@@ -1,0 +1,3 @@
+NID_X9_62_prime256v1 = 415
+NID_secp384r1 = 715
+NID_secp521r1 = 716

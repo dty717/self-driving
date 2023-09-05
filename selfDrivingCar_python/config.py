@@ -1,4 +1,3 @@
-selfVoltageScale = 1
 
 initString = "ABC:1000001"
 channel = 2
@@ -7,11 +6,8 @@ url = "155.138.195.23"
 port = 41234
 lowPowerProtectionVoltage = 3.62
 lowPowerWakeUpVoltage = 3.68
-
-IfUsingNTP = False
 ntpServer = "pool.ntp.org"
 timeZone = 32
-usingWatchDog = False
 
 class CommandCode:
     CommandIdle = 0
